@@ -1,0 +1,99 @@
+{
+  "restaurantName": "Resturente",
+  "categories": [
+    {
+      "id": "starters",
+      "name": "Starters",
+      "items": [
+        {
+          "id": "samosa",
+          "name": "Vegetable Samosa",
+          "description": "Crispy fried pastry filled with spiced vegetables",
+          "price": 250,
+          "prepTime": "10 min",
+          "image": "/images/ph.svg",
+          "availableQty": 20,
+          "addons": ["Extra chutney", "Spicy level"]
+        },
+        {
+          "id": "cutlet",
+          "name": "Fish Cutlet",
+          "description": "Deep-fried spicy fish ball",
+          "price": 100,
+          "prepTime": "8 min",
+          "image": "/images/ph.svg",
+          "availableQty": 25,
+          "addons": ["Extra sauce"]
+        }
+      ]
+    },
+    {
+      "id": "mains",
+      "name": "Mains",
+      "items": [
+        {
+          "id": "fried-rice",
+          "name": "Chicken Fried Rice",
+          "description": "Stir-fried rice with chicken and vegetables",
+          "price": 800,
+          "prepTime": "20 min",
+          "image": "/images/ph.svg",
+          "availableQty": 15,
+          "addons": ["Egg", "Cheese", "Extra Chicken"]
+        },
+        {
+          "id": "kottu",
+          "name": "Beef Kottu",
+          "description": "Chopped paratha mixed with beef and spices",
+          "price": 900,
+          "prepTime": "18 min",
+          "image": "/images/ph.svg",
+          "availableQty": 10,
+          "addons": ["Extra gravy", "Fried egg"]
+        }
+      ]
+    },
+    {
+      "id": "drinks",
+      "name": "Drinks",
+      "items": [
+        {
+          "id": "lime-juice",
+          "name": "Lime Juice",
+          "description": "Freshly squeezed lime with sugar and mint",
+          "price": 200,
+          "prepTime": "5 min",
+          "image": "/images/ph.svg",
+          "availableQty": 30,
+          "addons": ["Less sugar", "With ice"]
+        },
+        {
+          "id": "mango-shake",
+          "name": "Mango Milkshake",
+          "description": "Creamy mango blended with milk",
+          "price": 350,
+          "prepTime": "7 min",
+          "image": "/images/ph.svg",
+          "availableQty": 12,
+          "addons": ["Ice cream scoop"]
+        }
+      ]
+    },
+    {
+      "id": "combos",
+      "name": "Offers and Combos",
+      "items": [
+        {
+          "id": "combo-1",
+          "name": "Burger + Fries + Coke",
+          "description": "Best-selling combo with crispy fries and 330ml Coke",
+          "price": 1200,
+          "prepTime": "15 min",
+          "image": "/images/ph.svg",
+          "availableQty": 10,
+          "addons": []
+        }
+      ]
+    }
+  ]
+}

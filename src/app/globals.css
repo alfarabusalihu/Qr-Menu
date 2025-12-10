@@ -1,26 +1,290 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Prussian Blue - Keep these */
+  --prussian-dark: #003153;
+  --prussian: #034f84;
+  --prussian-light: #0a6c9a;
+
+  /* Light Yellow for buttons */
+  --yellow-light: #fef9c3;
+  --yellow: #fef08a;
+  --yellow-dark: #fde047;
+
+  /* Neutrals */
+  --gray-light: #f3f4f6;
+  --gray: #e5e7eb;
+  --gray-dark: #9ca3af;
+
+  /* Base colors */
+  --background: #001f33;
+  --foreground: #ffffff;
+  --surface: #002849;
+  --surface-light: #003660;
+
+  /* Accent */
+  --gold: #d4af37;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-light: var(--surface-light);
+  --color-prussian: var(--prussian);
+  --color-prussian-dark: var(--prussian-dark);
+  --color-prussian-light: var(--prussian-light);
+  --color-yellow-light: var(--yellow-light);
+  --color-yellow: var(--yellow);
+  --color-yellow-dark: var(--yellow-dark);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
+  margin: 0;
+  padding: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+}
+
+/* Primary button - Light Yellow */
+.btn-primary {
+  background: var(--yellow);
+  color: #000;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--yellow-dark);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Secondary button - White/Gray */
+.btn-secondary {
+  background: var(--gray-light);
+  color: #000;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--gray);
+}
+
+/* Outline button */
+.btn-outline {
+  background: transparent;
+  color: #fff;
+  font-weight: 600;
+  padding: 14px 28px;
+  border-radius: 12px;
+  border: 2px solid var(--gray-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+}
+
+/* Card styles */
+.card {
+  background: var(--surface-light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+/* Gold accent text */
+.text-gold {
+  color: var(--gold);
+}
+
+/* Input styles - Fixed spacing */
+.input-field {
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 16px 16px 16px 48px;
+  color: #fff;
+  font-size: 16px;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(254, 240, 138, 0.2);
+}
+
+.input-field::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.input-field:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Input wrapper for icon positioning */
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gray-dark);
+  pointer-events: none;
+  width: 20px;
+  text-align: center;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--prussian-light);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--prussian);
+}
+
+/* Badge */
+.badge {
+  background: var(--yellow);
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Navbar Sidebar */
+.navbar-sidebar {
+  background: linear-gradient(180deg, var(--prussian-dark) 0%, var(--surface) 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Two column layout */
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .two-column {
+    grid-template-columns: 1fr 400px;
+  }
+}
+
+/* Centered content container */
+.content-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  width: 100%;
+}
+
+/* Mobile bottom navbar */
+@media (max-width: 768px) {
+  .navbar-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    width: 100%;
+    z-index: 50;
+    border-right: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--prussian-dark);
+  }
+
+  .content-container {
+    padding: 16px;
+    padding-bottom: 100px;
+  }
+}
+
+/* Category pills */
+.category-pill {
+  background: var(--prussian-light);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.category-pill:hover {
+  background: var(--prussian);
+}
+
+/* Sticky summary card */
+@media (min-width: 1024px) {
+  .sticky-summary {
+    position: sticky;
+    top: 100px;
+  }
 }
