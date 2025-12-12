@@ -1,11 +1,10 @@
 'use client';
 
 import React from 'react';
-import { MenuItem } from '../services/api';
-import { useCart } from '../context/CartContext';
-import { usePanel } from '../context/PanelContext';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import Link from 'next/link';
+import { MenuItem } from '@/services/api';
+import { useCart } from '@/context/CartContext';
+import { Plus, Minus } from 'lucide-react';
 
 interface MenuItemCardProps {
     item: MenuItem;
@@ -13,18 +12,12 @@ interface MenuItemCardProps {
 
 const MenuItemCard = ({ item }: MenuItemCardProps) => {
     const { addToCart, getItemQuantity, updateQuantity, isLoaded } = useCart();
-    const { goToProduct } = usePanel();
 
     const quantity = isLoaded ? getItemQuantity(item.id) : 0;
     const isOutOfStock = item.availableQty <= 0;
 
-    const handleCardClick = () => {
-        if (!isOutOfStock) {
-            goToProduct(item);
-        }
-    };
-
     const handleAddClick = (e: React.MouseEvent) => {
+        e.preventDefault();
         e.stopPropagation();
         if (!isOutOfStock) {
             addToCart(item, 1);
@@ -32,6 +25,7 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
     };
 
     const handleIncrement = (e: React.MouseEvent) => {
+        e.preventDefault();
         e.stopPropagation();
         if (quantity < item.availableQty) {
             updateQuantity(item.id, quantity + 1);
@@ -39,14 +33,15 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
     };
 
     const handleDecrement = (e: React.MouseEvent) => {
+        e.preventDefault();
         e.stopPropagation();
         updateQuantity(item.id, quantity - 1);
     };
 
     return (
-        <div
-            className={`card cursor-pointer relative ${isOutOfStock ? 'opacity-50' : ''}`}
-            onClick={handleCardClick}
+        <Link
+            href={isOutOfStock ? '#' : `/product/${item.id}`}
+            className={`card block p-6 h-full hover:border-yellow/30 transition-all ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
             {isOutOfStock && (
                 <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
@@ -76,18 +71,19 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
                         {!isOutOfStock && isLoaded && (
                             quantity === 0 ? (
                                 <button
-                                    className="bg-yellow text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-yellow-dark transition"
+                                    className="bg-yellow text-black text-sm font-semibold px-6 py-3 rounded-lg hover:bg-yellow-dark transition flex items-center gap-1"
                                     onClick={handleAddClick}
                                 >
-                                    + Add
+                                    <Plus size={16} />
+                                    Add
                                 </button>
                             ) : (
-                                <div className="flex items-center gap-2 bg-surface rounded-lg px-2 py-1">
+                                <div className="flex items-center gap-2 bg-surface rounded-lg px-2 py-1" onClick={e => e.preventDefault()}>
                                     <button
                                         className="w-8 h-8 rounded-full bg-gray text-black flex items-center justify-center hover:bg-gray-dark transition"
                                         onClick={handleDecrement}
                                     >
-                                        <FontAwesomeIcon icon={faMinus} className="text-xs" />
+                                        <Minus size={14} />
                                     </button>
                                     <span className="text-white font-bold min-w-[24px] text-center">{quantity}</span>
                                     <button
@@ -95,21 +91,15 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
                                         onClick={handleIncrement}
                                         disabled={quantity >= item.availableQty}
                                     >
-                                        <FontAwesomeIcon icon={faPlus} className="text-xs" />
+                                        <Plus size={14} />
                                     </button>
                                 </div>
                             )
                         )}
-
-                        {!isOutOfStock && !isLoaded && (
-                            <button className="bg-gray text-black text-sm font-semibold px-4 py-2 rounded-lg opacity-50" disabled>
-                                + Add
-                            </button>
-                        )}
                     </div>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 

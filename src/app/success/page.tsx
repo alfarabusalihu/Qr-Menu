@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { usePanel } from '../../context/PanelContext';
-import { Order } from '../../services/api';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faCopy, faHome } from '@fortawesome/free-solid-svg-icons';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Order } from '@/services/api';
+import LayoutWrapper from '@/components/LayoutWrapper';
+import { CheckCircle, Copy, Home, Share2, User, Phone, Mail } from 'lucide-react';
 
-const SuccessPanel = () => {
-    const { goToMenu } = usePanel();
+export default function SuccessPage() {
+    const router = useRouter();
     const [order, setOrder] = useState<Order | null>(null);
     const [copied, setCopied] = useState(false);
     const [mounted, setMounted] = useState(false);
@@ -50,41 +50,45 @@ const SuccessPanel = () => {
 
     if (!mounted) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-yellow text-xl">Loading...</div>
-            </div>
+            <LayoutWrapper>
+                <div className="flex items-center justify-center h-screen">
+                    <div className="text-yellow text-xl">Loading...</div>
+                </div>
+            </LayoutWrapper>
         );
     }
 
     if (!order) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-center">
-                    <p className="text-gray-400 mb-4">No order found</p>
-                    <button className="btn-primary" onClick={goToMenu}>
-                        Go to Menu
-                    </button>
+            <LayoutWrapper>
+                <div className="flex items-center justify-center p-20">
+                    <div className="text-center">
+                        <p className="text-gray-400 mb-4">No order found</p>
+                        <Link href="/" className="btn-primary">
+                            Go to Menu
+                        </Link>
+                    </div>
                 </div>
-            </div>
+            </LayoutWrapper>
         );
     }
 
     return (
-        <div className="min-h-screen">
+        <LayoutWrapper>
             {/* Success Header */}
             <div className="bg-gradient-to-b from-green-500/20 to-transparent pt-12 pb-8">
-                <div className="content-container text-center">
-                    <div className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-6 animate-fade-in">
-                        <FontAwesomeIcon icon={faCheckCircle} className="text-4xl text-white" />
+                <div className="text-center px-4">
+                    <div className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center mx-auto mb-6 animate-in">
+                        <CheckCircle size={40} className="text-white" />
                     </div>
                     <h1 className="text-3xl font-bold text-white mb-2">Order Confirmed!</h1>
                     <p className="text-gray-400">Your order has been placed successfully</p>
                 </div>
             </div>
 
-            <main className="content-container max-w-2xl">
+            <div className="animate-in max-w-2xl mx-auto">
                 {/* Order ID Card */}
-                <div className="card mb-6 text-center">
+                <div className="card p-7 mb-8 text-center">
                     <p className="text-gray-400 text-sm mb-2">Order Number</p>
                     <div className="flex items-center justify-center gap-3 mb-4">
                         <span className="text-2xl font-bold text-yellow">{order.id}</span>
@@ -92,11 +96,11 @@ const SuccessPanel = () => {
                             onClick={handleCopyOrderId}
                             className="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition"
                         >
-                            <FontAwesomeIcon icon={faCopy} />
+                            <Copy size={18} />
                         </button>
                     </div>
                     {copied && (
-                        <p className="text-green-400 text-sm animate-fade-in">Copied to clipboard!</p>
+                        <p className="text-green-400 text-sm animate-in mb-2">Copied to clipboard!</p>
                     )}
                     <p className="text-gray-500 text-sm">
                         Save this number to add more items to your order
@@ -104,26 +108,41 @@ const SuccessPanel = () => {
                 </div>
 
                 {/* Customer Details */}
-                <div className="card mb-6">
+                <div className="card p-7 mb-8">
                     <h3 className="text-lg font-semibold text-white mb-4">Customer Details</h3>
-                    <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                            <span className="text-gray-400">Name</span>
-                            <span className="text-white font-medium">{order.userDetails.name}</span>
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-gray-400">
+                                <User size={20} />
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Name</p>
+                                <p className="text-white font-medium">{order.userDetails.name}</p>
+                            </div>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-400">Phone</span>
-                            <span className="text-white font-medium">{order.userDetails.phone}</span>
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-gray-400">
+                                <Phone size={20} />
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Phone</p>
+                                <p className="text-white font-medium">{order.userDetails.phone}</p>
+                            </div>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="text-gray-400">Email</span>
-                            <span className="text-white font-medium">{order.userDetails.email}</span>
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-gray-400">
+                                <Mail size={20} />
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500 uppercase tracking-wider font-bold">Email</p>
+                                <p className="text-white font-medium">{order.userDetails.email}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Order Items */}
-                <div className="card mb-6">
+                <div className="card p-7 mb-6">
                     <h3 className="text-lg font-semibold text-white mb-4">Order Items</h3>
                     <div className="space-y-3">
                         {order.items.map((item, idx) => (
@@ -139,7 +158,7 @@ const SuccessPanel = () => {
                         ))}
                     </div>
 
-                    <div className="border-t border-white/10 mt-4 pt-4">
+                    <div className="border-t border-white/10 mt-6 pt-6">
                         <div className="flex justify-between items-center">
                             <span className="text-lg font-semibold text-white">Total</span>
                             <span className="text-2xl font-bold text-yellow">Rs. {order.total}</span>
@@ -147,26 +166,17 @@ const SuccessPanel = () => {
                     </div>
                 </div>
 
-                {/* WhatsApp Share */}
-                <button
-                    onClick={handleWhatsAppShare}
-                    className="w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-4 px-6 rounded-xl flex items-center justify-center gap-3 transition mb-4"
-                >
-                    <FontAwesomeIcon icon={faWhatsapp} className="text-xl" />
-                    Share via WhatsApp
-                </button>
-
-                {/* Back to Menu */}
-                <button
-                    onClick={goToMenu}
-                    className="w-full btn-primary py-4 flex items-center justify-center gap-3"
-                >
-                    <FontAwesomeIcon icon={faHome} />
-                    Order More
-                </button>
-            </main>
-        </div>
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                    <Link
+                        href="/"
+                        className="btn-primary w-full py-4 text-lg"
+                    >
+                        <Home size={20} />
+                        Order More
+                    </Link>
+                </div>
+            </div>
+        </LayoutWrapper>
     );
-};
-
-export default SuccessPanel;
+}

@@ -62,9 +62,8 @@ export const menuService = {
             const response = await fetch(`${API_BASE}/menu`);
             return response.json();
         }
-        // Use local data
-        const data = await import('../data.json');
-        return data.default as MenuData;
+        const data = require('../app/data.json');
+        return data as MenuData;
     },
 };
 
