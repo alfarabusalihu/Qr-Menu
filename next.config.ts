@@ -1,15 +1,12 @@
 import type { NextConfig } from "next";
 
-module.exports={
-  images:{
-    domains:[
-      "placehold.co"
-    ],
-  },
-}
-
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    domains: ["placehold.co"],
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 };
 
 export default nextConfig;

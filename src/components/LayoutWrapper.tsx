@@ -1,9 +1,10 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useCart } from '@/context/CartContext';
+import { useStore } from '@/store/useStore';
 import Link from 'next/link';
 import { Home, ShoppingCart, MapPin, Phone, Mail, ArrowLeft, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface LayoutWrapperProps {
     children: React.ReactNode;
@@ -14,7 +15,14 @@ interface LayoutWrapperProps {
 
 const LayoutWrapper = ({ children, restaurantName = 'Restaurant', pageTitle, backUrl }: LayoutWrapperProps) => {
     const pathname = usePathname();
-    const { totalItems, isLoaded, clearCart } = useCart();
+    const { getCartTotal, clearCart } = useStore();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const { totalItems } = getCartTotal();
 
     const isActive = (path: string) => pathname === path;
 
@@ -62,7 +70,7 @@ const LayoutWrapper = ({ children, restaurantName = 'Restaurant', pageTitle, bac
                             <ShoppingCart size={20} />
                             Cart
 
-                            {isLoaded && totalItems > 0 && (
+                            {mounted && totalItems > 0 && (
                                 <span className="ml-auto bg-black/20 text-current text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
                                     {totalItems}
                                 </span>
@@ -106,7 +114,7 @@ const LayoutWrapper = ({ children, restaurantName = 'Restaurant', pageTitle, bac
                 >
                     <div className="relative">
                         <ShoppingCart size={24} />
-                        {isLoaded && totalItems > 0 && (
+                        {mounted && totalItems > 0 && (
                             <span className="absolute -top-2 -right-2 bg-yellow text-black text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-sm">
                                 {totalItems}
                             </span>
@@ -129,7 +137,7 @@ const LayoutWrapper = ({ children, restaurantName = 'Restaurant', pageTitle, bac
                                 <ArrowLeft size={20} />
                             </Link>
                             <h1 className="text-2xl md:text-3xl font-bold text-white">Shopping Cart</h1>
-                            {isLoaded && totalItems > 0 && (
+                            {mounted && totalItems > 0 && (
                                 <button
                                     onClick={clearCart}
                                     className="ml-auto text-red-400 hover:text-red-300 text-sm font-medium flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-red-500/10 transition"

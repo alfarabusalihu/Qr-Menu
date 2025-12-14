@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MenuItem } from '@/services/api';
-import { useCart } from '@/context/CartContext';
+import { useStore } from '@/store/useStore';
 import { Plus, Minus } from 'lucide-react';
 
 interface MenuItemCardProps {
@@ -11,9 +11,13 @@ interface MenuItemCardProps {
 }
 
 const MenuItemCard = ({ item }: MenuItemCardProps) => {
-    const { addToCart, getItemQuantity, updateQuantity, isLoaded } = useCart();
+    const { addToCart, updateQuantity } = useStore();
+    const quantity = useStore((state) => state.cart.find((i) => i.id === item.id)?.quantity || 0);
 
-    const quantity = isLoaded ? getItemQuantity(item.id) : 0;
+    // Hydration check
+    const [isLoaded, setIsLoaded] = useState(false);
+    useEffect(() => setIsLoaded(true), []);
+
     const isOutOfStock = item.availableQty <= 0;
 
     const handleAddClick = (e: React.MouseEvent) => {
@@ -64,7 +68,7 @@ const MenuItemCard = ({ item }: MenuItemCardProps) => {
 
                     <div className="flex items-center justify-between mt-2">
                         <div>
-                            <p className="text-lg md:text-xl font-bold text-yellow">Rs. {item.price}</p>
+                            <p className="text-lg md:text-xl font-bold text-yellow">$ {item.price}</p>
                             <p className="text-xs text-gray-500">🕒 {item.prepTime}</p>
                         </div>
 

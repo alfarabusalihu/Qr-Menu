@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { CartItem } from '@/services/api';
-import { useCart } from '@/context/CartContext';
+import { useStore } from '@/store/useStore';
 import { Plus, Minus, Trash2 } from 'lucide-react';
 
 interface CartItemRowProps {
@@ -10,7 +10,7 @@ interface CartItemRowProps {
 }
 
 const CartItemRow = ({ item }: CartItemRowProps) => {
-    const { updateQuantity, removeFromCart } = useCart();
+    const { updateQuantity, removeFromCart } = useStore();
 
     const handleIncrement = () => {
         if (item.quantity < item.availableQty) {
@@ -44,7 +44,7 @@ const CartItemRow = ({ item }: CartItemRowProps) => {
             {/* Name & Details */}
             <div className="flex-1 min-w-0">
                 <h3 className="text-base sm:text-lg font-bold text-white truncate">{item.name}</h3>
-                <p className="text-sm text-gray-400">Rs. {item.price} / item</p>
+                <p className="text-sm text-gray-400">$ {item.price} / item</p>
             </div>
 
             {/* Controls & Price - wrapped for mobile, row for desktop */}
@@ -69,7 +69,7 @@ const CartItemRow = ({ item }: CartItemRowProps) => {
 
                 {/* Price */}
                 <div className="text-right min-w-[80px]">
-                    <p className="text-lg sm:text-xl font-bold text-yellow">Rs. {itemTotal}</p>
+                    <p className="text-lg sm:text-xl font-bold text-yellow">$ {itemTotal}</p>
                 </div>
 
                 {/* Delete */}

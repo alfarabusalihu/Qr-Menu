@@ -3,21 +3,21 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Order } from '@/services/api';
+import { useStore } from '@/store/useStore';
 import LayoutWrapper from '@/components/LayoutWrapper';
-import { CheckCircle, Copy, Home, Share2, User, Phone, Mail } from 'lucide-react';
+import { CheckCircle, Copy, Home, User, Phone, Mail } from 'lucide-react';
 
 export default function SuccessPage() {
     const router = useRouter();
-    const [order, setOrder] = useState<Order | null>(null);
+    const { order, clearCart } = useStore();
     const [copied, setCopied] = useState(false);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
-        const savedOrder = sessionStorage.getItem('lastOrder');
-        if (savedOrder) {
-            setOrder(JSON.parse(savedOrder));
+        if (order) {
+            // Clear cart if successful order
+            clearCart();
         }
     }, []);
 
@@ -40,8 +40,8 @@ export default function SuccessPage() {
             `🍽️ Order Confirmation\n\n` +
             `Order ID: ${order.id}\n` +
             `Name: ${order.userDetails.name}\n\n` +
-            `Items:\n${order.items.map(item => `• ${item.quantity}x ${item.name} - Rs. ${item.price * item.quantity}`).join('\n')}\n\n` +
-            `Total: Rs. ${order.total}\n\n` +
+            `Items:\n${order.items.map(item => `• ${item.quantity}x ${item.name} - $ ${item.price * item.quantity}`).join('\n')}\n\n` +
+            `Total: $ ${order.total}\n\n` +
             `Thank you for your order!`
         );
 
@@ -63,7 +63,7 @@ export default function SuccessPage() {
             <LayoutWrapper>
                 <div className="flex items-center justify-center p-20">
                     <div className="text-center">
-                        <p className="text-gray-400 mb-4">No order found</p>
+                        <p className="text-gray-400 mb-4">No recent order found</p>
                         <Link href="/" className="btn-primary">
                             Go to Menu
                         </Link>
@@ -153,7 +153,7 @@ export default function SuccessPage() {
                                     </span>
                                     <span className="text-white">{item.name}</span>
                                 </div>
-                                <span className="text-yellow font-medium">Rs. {item.price * item.quantity}</span>
+                                <span className="text-yellow font-medium">$ {item.price * item.quantity}</span>
                             </div>
                         ))}
                     </div>
@@ -161,7 +161,7 @@ export default function SuccessPage() {
                     <div className="border-t border-white/10 mt-6 pt-6">
                         <div className="flex justify-between items-center">
                             <span className="text-lg font-semibold text-white">Total</span>
-                            <span className="text-2xl font-bold text-yellow">Rs. {order.total}</span>
+                            <span className="text-2xl font-bold text-yellow">$ {order.total}</span>
                         </div>
                     </div>
                 </div>

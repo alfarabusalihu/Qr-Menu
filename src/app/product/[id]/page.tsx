@@ -2,24 +2,27 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { menuService, MenuItem } from '@/services/api';
-import { useCart } from '@/context/CartContext';
+import { useStore } from '@/store/useStore';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { ArrowLeft, Plus, Minus, ShoppingCart, Clock, MessageSquare } from 'lucide-react';
 
 export default function ProductPage() {
     const params = useParams();
-    const router = useRouter();
     const [product, setProduct] = useState<MenuItem | null>(null);
     const [specialInstructions, setSpecialInstructions] = useState('');
     const [quantity, setQuantity] = useState(1);
-    const { addToCart, getItemQuantity } = useCart();
+
+    // Zustand hooks
+    const addToCart = useStore((state) => state.addToCart);
+    const cart = useStore((state) => state.cart);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     const productId = params.id as string;
 
     useEffect(() => {
+        setIsLoaded(true);
         const loadProduct = async () => {
             const menuData = await menuService.getMenu();
             for (const category of menuData.categories) {
@@ -33,7 +36,7 @@ export default function ProductPage() {
         loadProduct();
     }, [productId]);
 
-    if (!product) {
+    if (!product || !isLoaded) {
         return (
             <LayoutWrapper>
                 <div className="flex items-center justify-center h-screen">
@@ -54,7 +57,7 @@ export default function ProductPage() {
 
     const handleAddToCart = () => {
         if (!isOutOfStock) {
-            addToCart(product, quantity); 
+            addToCart(product, quantity);
             setQuantity(1);
             setSpecialInstructions('');
         }
@@ -112,7 +115,7 @@ export default function ProductPage() {
                             </div>
                             <div className="h-8 w-px bg-white/10"></div>
                             <div className="text-3xl font-bold text-white">
-                                Rs. {product.price}
+                                 {product.price}$
                             </div>
                         </div>
 
@@ -160,7 +163,7 @@ export default function ProductPage() {
                                         className="w-full bg-yellow hover:bg-yellow-dark text-black text-lg font-bold py-4 rounded-xl shadow-lg shadow-yellow/10 hover:shadow-yellow/20 transition-all flex items-center justify-center gap-3 transform active:scale-[0.98]"
                                     >
                                         <ShoppingCart size={24} />
-                                        Add to Cart - Rs. {product.price * quantity}
+                                        Add to Cart - {product.price * quantity}$
                                     </button>
                                 </>
                             ) : (

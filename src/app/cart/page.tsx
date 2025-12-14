@@ -1,22 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCart } from '@/context/CartContext';
+import { useStore } from '@/store/useStore';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import CartItemRow from '@/components/CartItemRow';
-import { ArrowLeft, ShoppingBag, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Plus } from 'lucide-react';
 
 export default function CartPage() {
     const router = useRouter();
-    const { items, totalPrice, isLoaded } = useCart();
+    const { cart, getCartTotal } = useStore();
+    const [mounted, setMounted] = useState(false);
 
-    // Explicitly calculate total items for badge/display if needed, though context usually provides it
-    const totalItemsCount = items.reduce((acc, item) => acc + item.quantity, 0);
-    const isEmpty = isLoaded && items.length === 0;
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
-    if (!isLoaded) {
+    if (!mounted) {
         return (
             <LayoutWrapper>
                 <div className="flex items-center justify-center h-screen">
@@ -25,6 +26,10 @@ export default function CartPage() {
             </LayoutWrapper>
         );
     }
+
+    const { totalItems, totalPrice } = getCartTotal();
+    const isEmpty = cart.length === 0;
+
     return (
         <LayoutWrapper>
             <div className="p-4 md:p-8 lg:p-8">
@@ -49,7 +54,7 @@ export default function CartPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in">
                         {/* Cart Items List */}
                         <div className="lg:col-span-2 space-y-4">
-                            {items.map((item) => (
+                            {cart.map((item) => (
                                 <CartItemRow key={item.id} item={item} />
                             ))}
 
@@ -69,17 +74,17 @@ export default function CartPage() {
 
                                 <div className="space-y-4 mb-6">
                                     <div className="flex justify-between text-gray-400">
-                                        <span>Subtotal ({totalItemsCount} items)</span>
-                                        <span className="text-white">Rs. {totalPrice}</span>
+                                        <span>Subtotal ({totalItems} items)</span>
+                                        <span className="text-white">$ {totalPrice}</span>
                                     </div>
                                     <div className="flex justify-between text-gray-400">
                                         <span>Taxes (0%)</span>
-                                        <span className="text-white">Rs. 0</span>
+                                        <span className="text-white">$ 0</span>
                                     </div>
                                     <div className="h-px bg-white/10 my-4"></div>
                                     <div className="flex justify-between items-center">
                                         <span className="text-lg font-bold text-white">Total</span>
-                                        <span className="text-2xl font-bold text-yellow">Rs. {totalPrice}</span>
+                                        <span className="text-2xl font-bold text-yellow">$ {totalPrice}</span>
                                     </div>
                                 </div>
 

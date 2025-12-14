@@ -1,5 +1,5 @@
-// Service layer - easily swap between localStorage (demo) and real API
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || null;
+// Service layer
+const API_BASE = 'http://localhost:8080/api';
 
 // Types
 export interface MenuItem {
@@ -34,12 +34,16 @@ export interface UserDetails {
     email: string;
 }
 
+export type PaymentMethod = 'cash' | 'stripe';
+
 export interface Order {
     id: string;
-    userId: string;
+    sessionId: string;
     items: CartItem[];
     userDetails: UserDetails;
     status: 'pending' | 'preparing' | 'completed' | 'cancelled';
+    paymentMethod: PaymentMethod;
+    paymentStatus: 'pending' | 'paid' | 'failed';
     total: number;
     createdAt: string;
 }
@@ -58,115 +62,27 @@ export const generateOrderId = (): string => {
 // Menu Service
 export const menuService = {
     getMenu: async (): Promise<MenuData> => {
-        if (API_BASE) {
-            const response = await fetch(`${API_BASE}/menu`);
-            return response.json();
-        }
-        const data = require('../app/data.json');
-        return data as MenuData;
-    },
-};
-
-// Cart Service (localStorage)
-const CART_KEY = 'restaurant_cart';
-const USER_ID_KEY = 'restaurant_user_id';
-
-export const cartService = {
-    getUserId: (): string => {
-        if (typeof window === 'undefined') return '';
-        let userId = localStorage.getItem(USER_ID_KEY);
-        if (!userId) {
-            userId = `USER-${generateId()}`;
-            localStorage.setItem(USER_ID_KEY, userId);
-        }
-        return userId;
-    },
-
-    getCart: (): CartItem[] => {
-        if (typeof window === 'undefined') return [];
-        const cart = localStorage.getItem(CART_KEY);
-        return cart ? JSON.parse(cart) : [];
-    },
-
-    saveCart: (items: CartItem[]): void => {
-        if (typeof window === 'undefined') return;
-        localStorage.setItem(CART_KEY, JSON.stringify(items));
-    },
-
-    clearCart: (): void => {
-        if (typeof window === 'undefined') return;
-        localStorage.removeItem(CART_KEY);
-    },
-};
-
-// Order Service
-const ORDERS_KEY = 'restaurant_orders';
-const CURRENT_ORDER_KEY = 'restaurant_current_order';
-
-export const orderService = {
-    getOrders: (): Order[] => {
-        if (typeof window === 'undefined') return [];
-        const orders = localStorage.getItem(ORDERS_KEY);
-        return orders ? JSON.parse(orders) : [];
-    },
-
-    getOrderById: (orderId: string): Order | null => {
-        const orders = orderService.getOrders();
-        return orders.find(o => o.id === orderId) || null;
-    },
-
-    createOrder: (items: CartItem[], userDetails: UserDetails): Order => {
-        const userId = cartService.getUserId();
-        const order: Order = {
-            id: generateOrderId(),
-            userId,
-            items,
-            userDetails,
-            status: 'pending',
-            total: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
-            createdAt: new Date().toISOString(),
-        };
-
-        const orders = orderService.getOrders();
-        orders.push(order);
-        localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-        localStorage.setItem(CURRENT_ORDER_KEY, order.id);
-
-        return order;
-    },
-
-    addToExistingOrder: (orderId: string, newItems: CartItem[]): Order | null => {
-        const orders = orderService.getOrders();
-        const orderIndex = orders.findIndex(o => o.id === orderId);
-
-        if (orderIndex === -1) return null;
-
-        const order = orders[orderIndex];
-
-        // Merge items
-        newItems.forEach(newItem => {
-            const existingIndex = order.items.findIndex(i => i.id === newItem.id);
-            if (existingIndex >= 0) {
-                order.items[existingIndex].quantity += newItem.quantity;
-            } else {
-                order.items.push(newItem);
+        try {
+            const response = await fetch(`${API_BASE}/menu`, {
+                // Next.js extension for caching - revalidate every 60 seconds is handled in the page component usually,
+                // but for simple fetch we can just do standard fetch.
+                // If using in Server Component, we can pass cache options.
+                next: { revalidate: 60 }
+            });
+            if (!response.ok) {
+                throw new Error('Failed to fetch menu');
             }
-        });
-
-        order.total = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        orders[orderIndex] = order;
-        localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-
-        return order;
-    },
-
-    getCurrentOrderId: (): string | null => {
-        if (typeof window === 'undefined') return null;
-        return localStorage.getItem(CURRENT_ORDER_KEY);
-    },
-
-    clearCurrentOrder: (): void => {
-        if (typeof window === 'undefined') return;
-        localStorage.removeItem(CURRENT_ORDER_KEY);
+            const data = await response.json();
+            if (!data || !data.categories) {
+                console.warn('Backend returned incomplete data, using fallback');
+                return { restaurantName: data?.restaurantName || 'Restaurant', categories: [] };
+            }
+            return data;
+        } catch (error) {
+            console.error("Error fetching menu:", error);
+            // Fallback for dev if backend not ready, usually better to fail or handle gracefully
+            // For build time, return empty structure to allow completion
+            return { restaurantName: 'Menu (Offline)', categories: [] };
+        }
     },
 };

@@ -1,25 +1,15 @@
-'use client';
 
-import React, { useEffect, useState } from 'react';
-import { menuService, MenuData } from '@/services/api';
-import { useCart } from '@/context/CartContext';
+import React from 'react';
+import { menuService } from '@/services/api';
 import LayoutWrapper from '@/components/LayoutWrapper';
-
-import { ShoppingCart } from 'lucide-react';
-import Link from 'next/link';
 import MenuItemCard from '@/components/MenuItemCard';
+import FloatingCartButton from '@/components/FloatingCartButton';
 
-export default function HomePage() {
-  const [menuData, setMenuData] = useState<MenuData | null>(null);
-  const { totalItems, totalPrice, isLoaded } = useCart();
+// Revalidate every 60 seconds (ISR)
+export const revalidate = 60;
 
-  useEffect(() => {
-    const loadMenu = async () => {
-      const data = await menuService.getMenu();
-      setMenuData(data);
-    };
-    loadMenu();
-  }, []);
+export default async function HomePage() {
+  const menuData = await menuService.getMenu();
 
   if (!menuData) {
     return (
@@ -44,7 +34,7 @@ export default function HomePage() {
         {/* Categories */}
         <div className="header-content mt-3">
           <div className="flex gap-2 flex-wrap justify-center w-full">
-            {menuData.categories.map((cat) => (
+            {(menuData.categories || []).map((cat) => (
               <a
                 key={cat.id}
                 href={`#${cat.id}`}
@@ -59,7 +49,7 @@ export default function HomePage() {
 
       {/* Menu Content */}
       <div className="space-y-12 p-6 md:p-10 lg:p-12">
-        {menuData?.categories.map((category) => (
+        {(menuData.categories || []).map((category) => (
           <section key={category.id} id={category.id} className="scroll-mt-24">
             <div className="flex items-center gap-4 mb-8">
               <h2 className="text-2xl font-bold text-white">{category.name}</h2>
@@ -76,18 +66,7 @@ export default function HomePage() {
       </div>
 
       {/* Floating Cart Button */}
-      {isLoaded && totalItems > 0 && (
-        <div className="fixed bottom-20 md:bottom-6 right-4 md:right-8 z-30">
-          <Link
-            href="/cart"
-            className="btn-primary py-4 px-6 text-lg shadow-lg"
-          >
-            <ShoppingCart size={20} />
-            <span className="font-bold">{totalItems} items</span>
-            <span className="font-bold">• Rs. {totalPrice}</span>
-          </Link>
-        </div>
-      )}
+      <FloatingCartButton />
     </LayoutWrapper>
   );
 }
