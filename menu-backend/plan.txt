@@ -1,0 +1,5 @@
+Plan Update 17:
+- [x] Explained Project Structure: `main.go` is the server, `cmd/migrate/main.go` is the one-time DB setup tool.
+- [x] Refactored: Moved `main.go` to `cmd/server/main.go` to match standard Go layout.
+- Next Task: Implement WhatsApp Order Confirmation.
+- Strategy: Create `internal/service/notification.go` and call it inside `PlaceOrder`.

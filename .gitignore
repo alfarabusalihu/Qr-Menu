@@ -32,9 +32,14 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+/menu-backend/.env
 
 # vercel
 .vercel
+
+#txt files
+/menu-backend/plan.txt
+/menu-backend/intro.txt
 
 # typescript
 *.tsbuildinfo

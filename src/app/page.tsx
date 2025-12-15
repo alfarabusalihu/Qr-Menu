@@ -5,7 +5,6 @@ import LayoutWrapper from '@/components/LayoutWrapper';
 import MenuItemCard from '@/components/MenuItemCard';
 import FloatingCartButton from '@/components/FloatingCartButton';
 
-// Revalidate every 60 seconds (ISR)
 export const revalidate = 60;
 
 export default async function HomePage() {

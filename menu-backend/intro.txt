@@ -1,0 +1,125 @@
+Backend Specification & Integration Guide
+1. Project Overview
+Project Name: Smart Digital Menu & Ordering System Frontend Stack: Next.js 15 (App Router), Tailwind CSS, Lucide Icons, TypeScript. the backnd will be built using go and for the database supabase. Purpose: A responsive web application allowing restaurant customers to:
+
+Scan a QR code to enter a session (linked to a Table).
+Browse a categorized menu.
+Add items to a cart.
+Place orders with flexible payment options (Cash vs Online).
+Add items to an existing active order within the same session.
+2. Core Concepts & Data Models
+A. Session Management
+Instead of persistent User Accounts, the system uses Sessions.
+
+Format: SES-TBL{N}-{RANDOM} (e.g., SES-TBL5-X9Y2)
+Lifecycle: Created when a user scans a QR code or visits the site. Persists via LocalStorage (restaurant_session_id).
+Backend Responsibility: Track active sessions and link multiple orders from the same table to one session/bill if needed, or keep them distinct but grouped.
+B. Data Schemas
+1. Menu Structure
+The menu is hierarchical: Menu -> Categories -> Items.
+
+interface MenuData {
+  restaurantName: string;
+  categories: Category[]; // Array of Categories
+}
+interface Category {
+  id: string;   // e.g., "starters"
+  name: string; // e.g., "Starters"
+  items: MenuItem[];
+}
+interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;      // URL to image
+  prepTime: string;   // e.g., "15 mins"
+  availableQty: number;
+  addons?: string[];  // IDs of valid addons
+}
+2. Order Structure
+The core transactional entity.
+
+interface Order {
+  id: string;             // e.g., "ORD-TIMESTAMP-XXX"
+  sessionId: string;      // The session ID (e.g., "SES-TBL5-X9Y")
+  tableId: string;        // Derived from Session ID (e.g., "5")
+  
+  // Customer Info
+  userDetails: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+  // Payment
+  paymentMethod: 'cash' | 'stripe';
+  paymentStatus: 'pending' | 'paid' | 'failed';
+  stripeSessionId?: string; // If applicable
+  // Order Details
+  status: 'pending' | 'preparing' | 'served' | 'completed' | 'cancelled';
+  items: CartItem[];      // Array of items with quantities
+  total: number;
+  createdAt: string;      // ISO Timestamp
+}
+interface CartItem extends MenuItem {
+  quantity: number;
+}
+3. required API Endpoints
+The backend should provide RESTful endpoints to support the frontend flows.
+
+A. Menu Management
+GET /api/menu
+Response: JSON object matching 
+MenuData
+ structure.
+Usage: Fetched by Frontend Home Page (/) on load.
+B. Order Processing
+POST /api/orders
+
+Purpose: Create a new order.
+Payload:
+{
+  "sessionId": "SES-TBL5-ABC",
+  "items": [{ "id": "burger-1", "quantity": 2, "price": 1200 }],
+  "userDetails": { "name": "John", "phone": "1234567890", "email": "john@ex.com" },
+  "paymentMethod": "stripe" | "cash"
+}
+Response (Cash): { "success": true, "order": { ...orderObject... } }
+Response (Stripe): { "success": true, "order": { ... }, "paymentUrl": "https://stripe.com/checkout/..." }
+PUT /api/orders/{orderId}
+
+Purpose: Add items to an existing open order (if supported by business logic).
+Payload: { "items": [ ...new items... ] }
+Logic: Backend appends items to the order and returns the updated order totals.
+GET /api/orders/{orderId}
+
+Purpose: Retrieve order status/details.
+Usage: Used for specific order lookup in the "Existing Order" flow.
+GET /api/orders/session/{sessionId} (Optional)
+
+Purpose: Get all orders for a current active session.
+Usage: Could be used to show a "Table Bill" summary.
+4. Frontend-Backend Workflows
+Scenario 1: Order with Cash Payment
+Frontend: User selects "Cash" and clicks "Place Order".
+API Call: POST /api/orders with paymentMethod: 'cash'.
+Backend:
+Validates items/prices.
+Creates Order Record in Database with status: 'pending', paymentStatus: 'pending'.
+Returns Order Object.
+Frontend: Redirects to /success displaying the Order ID.
+Scenario 2: Order with Online Payment (Stripe)
+Frontend: User selects "Online Payment" and clicks "Pay & Order".
+API Call: POST /api/orders with paymentMethod: 'stripe'.
+Backend:
+Creates Pending Order Record.
+Initializes Stripe Checkout Session.
+Returns { paymentUrl: '...' }.
+Frontend: Redirects user to paymentUrl.
+External: User pays on Stripe -> Stripe Webhook notifies Backend -> Backend updates paymentStatus: 'paid'.
+Frontend: User is redirected back to /success (handled via Stripe success_url).
+5. Technical Considerations for Backend
+CORS: Ensure origins http://localhost:3000 (dev) and production domains are allowed.
+Validation: reliable backend validation for item prices is crucial; do not trust frontend prices blindly.
+Real-time Updates: Consider WebSockets (Socket.io) or Server-Sent Events (SSE) to notify the kitchen dashboard when new orders arrive.
+Session Parsing: Backend should be able to extract the Table ID from SES-TBL{ID}-... strings to group orders by table in the admin view.
