@@ -86,3 +86,23 @@ export const menuService = {
         }
     },
 };
+
+export const orderService = {
+    submitOrder: async (order: Order): Promise<Order> => {
+        try {
+            const response = await fetch(`${API_BASE}/orders`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(order),
+            });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || 'Failed to submit order to backend');
+            }
+            return await response.json();
+        } catch (error) {
+            console.error("Error submitting order:", error);
+            throw error;
+        }
+    },
+};

@@ -6,6 +6,8 @@ import (
 	"menu-backend/internal/handlers"
 	"menu-backend/internal/repository"
 	"menu-backend/internal/service"
+	"menu-backend/internal/middlewares"
+
 	"net/http"
 	"os"
 
@@ -22,7 +24,8 @@ func main() {
 	defer dbPool.Close()
 
 	repo := repository.NewPostgresRepository(dbPool)
-	svc := service.NewMenuService(repo)
+	notifier := service.NewWhatsAppNotificationService()
+	svc := service.NewMenuService(repo, notifier)
 	handler := handlers.NewHandler(svc)
 
 	mux := http.NewServeMux()
@@ -35,7 +38,10 @@ func main() {
 	}
 
 	log.Printf("Server starting on port %s", port)
-	if err := http.ListenAndServe(":"+port, mux); err != nil {
+	handlerWithCORS := middlewares.CORS(mux)
+
+	if err := http.ListenAndServe(":"+port, handlerWithCORS); err != nil {
 		log.Fatal(err)
 	}
+
 }

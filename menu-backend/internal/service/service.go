@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log"
 	"menu-backend/internal/models"
 	"menu-backend/internal/repository"
 )
@@ -13,11 +14,15 @@ type Service interface {
 }
 
 type MenuService struct {
-	repo repository.Repository
+	repo     repository.Repository
+	notifier NotificationService
 }
 
-func NewMenuService(repo repository.Repository) *MenuService {
-	return &MenuService{repo: repo}
+func NewMenuService(repo repository.Repository, notifier NotificationService) *MenuService {
+	return &MenuService{
+		repo:     repo,
+		notifier: notifier,
+	}
 }
 
 func (s *MenuService) GetMenu(ctx context.Context) (*models.MenuData, error) {
@@ -31,6 +36,13 @@ func (s *MenuService) PlaceOrder(ctx context.Context, order *models.Order) (*mod
 	if err != nil {
 		return nil, err
 	}
+
+	go func() {
+		if err := s.notifier.SendOrderConfirmation(order); err != nil {
+			log.Printf("[ERROR] Failed to send notification: %v", err)
+		}
+	}()
+
 	return order, nil
 }
 

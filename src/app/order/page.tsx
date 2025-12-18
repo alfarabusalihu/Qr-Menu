@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useStore } from '@/store/useStore';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import { User, Phone, Mail, Receipt, Search } from 'lucide-react';
-import { Order } from '@/services/api';
+import { Order, orderService } from '@/services/api';
 
 export default function OrderPage() {
     const router = useRouter();
@@ -88,6 +88,19 @@ export default function OrderPage() {
                 return;
             } else {
                 order = createOrder({ name, phone, email }, paymentMethod);
+            }
+
+            // Sync with backend
+            if (order) {
+                try {
+                    await orderService.submitOrder(order);
+                } catch (err) {
+                    console.error("Backend sync failed:", err);
+                    // Decide if we block success. For now, we alert but maybe proceed locally for demo?
+                    // Or throw to stop flow.
+                    // Let's throw to ensure user knows.
+                    throw new Error("Failed to send order to server. Please try again.");
+                }
             }
 
             if (order) {
