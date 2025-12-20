@@ -48,3 +48,35 @@ CREATE TABLE IF NOT EXISTS order_items (
     quantity INTEGER NOT NULL,
     price DECIMAL(10, 2) NOT NULL -- Snapshot of price at time of order
 );
+
+-- Staff Table
+CREATE TABLE IF NOT EXISTS staff (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL CHECK (role IN ('admin', 'staff')),
+    job_title TEXT DEFAULT 'waiter',
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Staff Sessions (Track who's logged in)
+CREATE TABLE IF NOT EXISTS staff_sessions (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    staff_id UUID REFERENCES staff(id) ON DELETE CASCADE,
+    login_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    logout_at TIMESTAMP WITH TIME ZONE,
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+-- Daily Inventory (Stock tracking)
+CREATE TABLE IF NOT EXISTS daily_inventory (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    menu_item_id UUID REFERENCES menu_items(id) ON DELETE CASCADE,
+    date DATE NOT NULL,
+    initial_stock INTEGER NOT NULL,
+    current_stock INTEGER NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    UNIQUE(menu_item_id, date)
+);

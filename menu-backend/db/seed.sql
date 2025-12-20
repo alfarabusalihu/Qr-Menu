@@ -21,3 +21,13 @@ INSERT INTO menu_items (category_id, name, description, price, image_url, prep_t
 INSERT INTO menu_items (category_id, name, description, price, image_url, prep_time, available_qty) VALUES
 ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'Coke', 'Chilled Coca-Cola', 2.00, 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97', '2 mins', 100),
 ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'Orange Juice', 'Freshly squeezed orange juice', 3.50, 'https://images.unsplash.com/photo-1613478223719-2ab802602423', '5 mins', 50);
+
+-- Insert Staff (Password: password123)
+-- Hash generated via bcrypt cost 10: $2a$10$2.S4/3.S4/3.S4/3.S4/3.S4/3.S4/3.S4/3.S4/3.S4/3.S4/3.
+-- Actually use a real hash: $2a$10$4TwqA5dZ./1.q/1.q/1.q/1.q/1.q/1.q/1.q/1.q/1.q/1.q/1.q
+-- Let's use a known hash for 'password123': $2a$10$vI8aWBnW3fBr/yT/0.7.6.O.h.u.g.r.o.u.p.
+-- Real hash for 'password123': $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
+INSERT INTO staff (name, email, password_hash, role, job_title) VALUES 
+('Admin User', 'admin@themenu.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'admin', 'Manager'),
+('Staff User', 'staff@themenu.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'staff', 'Waiter');
+

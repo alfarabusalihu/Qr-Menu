@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"menu-backend/internal/models"
 	"net/http"
@@ -38,30 +39,45 @@ func NewWhatsAppNotificationService() *WhatsAppNotificationService {
 }
 
 func (s *WhatsAppNotificationService) SendOrderConfirmation(order *models.Order) error {
+	log.Printf("[WhatsApp] Starting notification for order %s", order.ID)
+	
 	if s.AccountSID == "" || s.AuthToken == "" || s.FromPhone == "" {
 		log.Println("[WhatsApp] Twilio credentials missing, skipping notification")
 		return nil
 	}
 
+	log.Printf("[WhatsApp] Sending to: %s, From: %s", order.UserDetails.Phone, s.FromPhone)
+
 	// Format the invoice message
 	var itemsList strings.Builder
 	for _, item := range order.Items {
-		itemsList.WriteString(fmt.Sprintf("- %dx %s ($%.2f)\n", item.Quantity, item.Name, item.Price))
+		itemsList.WriteString(fmt.Sprintf("%s - %dx - $%.2f\n", item.Name, item.Quantity, item.Price*float64(item.Quantity)))
 	}
 
+	// TODO: Make Restaurant Name and URL configurable via env if needed
+	restaurantName := "The Menu Restaurant"
+	menuLink := "https://nav-menu-app.vercel.app" // Replace with actual production URL or localhost for dev
+
 	messageBody := fmt.Sprintf(
-		"🧾 *Order Confirmation*\n\n"+
-			"Hello *%s*! Thank you for your order.\n\n"+
-			"*Order ID:* %s\n"+
-			"*Date:* %s\n\n"+
-			"*Your Items:*\n%s\n"+
-			"*Total: $%.2f*\n\n"+
-			"We are preparing your food! 🍳",
+		"*Name:* %s\n"+
+			"*Email:* %s\n"+
+			"--------------------------------\n"+
+			"*Order ID:* %s\n\n"+
+			"*Items Ordered:*\n%s\n"+
+			"*Total:* $%.2f\n"+
+			"*Payment Status:* %s\n\n"+
+			"*Restaurant:* %s\n"+
+			"*WhatsApp:* %s\n\n"+
+			"🔗 *Go to Menu:* %s",
 		order.UserDetails.Name,
+		order.UserDetails.Email,
 		order.ID,
-		order.CreatedAt.Format("2006-01-02 15:04"),
 		itemsList.String(),
 		order.Total,
+		strings.ToUpper(order.PaymentStatus),
+		restaurantName,
+		s.FromPhone,
+		menuLink,
 	)
 
 	// Twilio API URL
@@ -83,18 +99,22 @@ func (s *WhatsAppNotificationService) SendOrderConfirmation(order *models.Order)
 	req.SetBasicAuth(s.AccountSID, s.AuthToken)
 
 	// Send request
+	log.Println("[WhatsApp] Sending HTTP request to Twilio...")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Printf("[WhatsApp] HTTP request failed: %v", err)
 		return fmt.Errorf("failed to send request: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		log.Printf("[WhatsApp] Notification sent to %s", order.UserDetails.Phone)
+		log.Printf("[WhatsApp] ✅ Notification sent successfully to %s (Status: %d)", order.UserDetails.Phone, resp.StatusCode)
 		return nil
 	}
 
-	log.Printf("[WhatsApp] Failed to send. Status: %s", resp.Status)
-	return fmt.Errorf("twilio API returned status: %s", resp.Status)
+	// Read error response body
+	bodyBytes, _ := io.ReadAll(resp.Body)
+	log.Printf("[WhatsApp] ❌ Failed to send. Status: %d, Response: %s", resp.StatusCode, string(bodyBytes))
+	return fmt.Errorf("twilio API returned status: %d - %s", resp.StatusCode, string(bodyBytes))
 }

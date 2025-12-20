@@ -21,6 +21,7 @@ type MenuItem struct {
 	Image        string   `json:"image"`
 	PrepTime     string   `json:"prepTime"`
 	AvailableQty int      `json:"availableQty"`
+	IsAvailable  bool     `json:"isAvailable"`
 	Addons       []string `json:"addons,omitempty"`
 }
 
@@ -47,4 +48,49 @@ type Order struct {
 	Items           []CartItem  `json:"items"`
 	Total           float64     `json:"total"`
 	CreatedAt       time.Time   `json:"createdAt"`
+}
+
+type Staff struct {
+	ID           string    `json:"id"`
+	Name         string    `json:"name"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"-"`
+	Role         string    `json:"role"`
+	JobTitle     string    `json:"jobTitle"`
+	IsActive     bool      `json:"isActive"`
+	CreatedAt    time.Time `json:"createdAt"`
+}
+
+type StaffSession struct {
+	ID       string     `json:"id"`
+	StaffID  string     `json:"staffId"`
+	LoginAt  time.Time  `json:"loginAt"`
+	LogoutAt *time.Time `json:"logoutAt,omitempty"`
+	IsActive bool       `json:"isActive"`
+}
+
+type DailyInventory struct {
+	ID           string    `json:"id"`
+	MenuItemID   string    `json:"menuItemId"`
+	Date         string    `json:"date"`
+	InitialStock int       `json:"initialStock"`
+	CurrentStock int       `json:"currentStock"`
+	UpdatedAt    time.Time `json:"updatedAt"`
+}
+
+type StaffLoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type StaffLoginResponse struct {
+	Token string `json:"token"`
+	Staff Staff  `json:"staff"`
+}
+
+type MenuItemWithStock struct {
+	MenuItem
+	DailyLimit   int  `json:"dailyLimit"`
+	CurrentStock int  `json:"currentStock"`
+	IsLowStock   bool `json:"isLowStock"`
 }
