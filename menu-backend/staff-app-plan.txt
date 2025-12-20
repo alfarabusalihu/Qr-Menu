@@ -1,0 +1,314 @@
+===========================================
+STAFF MANAGEMENT APP - COMPREHENSIVE PLAN
+===========================================
+
+PROJECT OVERVIEW
+================
+A React Native mobile application for restaurant staff to manage orders, control menu availability, 
+and track inventory with daily stock limits. The app supports two roles: Admin and Staff, each with 
+different permissions and features.
+
+BACKEND IMPLEMENTATION (COMPLETED)
+==================================
+
+Database Schema:
+- staff: User authentication (admin/staff roles)
+- staff_sessions: Track who's logged in
+- daily_inventory: Daily stock limits and current stock
+- Existing tables: categories, menu_items, orders, order_items
+
+Key Features:
+- Daily stock limits for each menu item
+- Auto-decrement stock when orders are placed
+- Auto-disable items when stock reaches 0
+- Staff can manually enable/disable items
+- Track active staff sessions
+
+API Endpoints:
+POST /api/staff/login              - Staff/Admin authentication
+POST /api/staff/logout             - End session
+GET  /api/staff/active            - Get logged-in staff (Admin only)
+GET  /api/staff/list              - Get all staff (Admin only)
+GET  /api/staff/orders            - Get orders (filtered by status, sorted oldest first)
+PUT  /api/staff/orders/{id}/status - Update order status
+GET  /api/staff/menu              - Get menu with current stock levels
+PUT  /api/staff/menu/{id}/toggle  - Enable/disable menu item
+
+MOBILE APP STRUCTURE
+====================
+
+Technology Stack:
+- React Native (Expo or bare workflow)
+- TypeScript
+- React Navigation v6
+- Redux Toolkit or Zustand (state management)
+- Axios + React Query (API)
+- AsyncStorage (token persistence)
+
+Color Palette:
+Primary:    #FF6B6B (Coral/Salmon)
+Secondary:  #4ECDC4 (Teal)
+Background: #F7F7F7 (Light Gray)
+Card:       #FFFFFF (White)
+Text:       #2C3E50 (Dark Gray)
+Success:    #2ECC71 (Green - Paid/Served)
+Warning:    #F39C12 (Orange - Preparing/Low Stock)
+Danger:     #E74C3C (Red - Unpaid/Out of Stock)
+
+PAGES & FEATURES
+================
+
+1. LOGIN PAGE
+-------------
+Purpose: Authenticate staff and admin users
+Features:
+- Email and password input
+- Role-based login (admin/staff)
+- Remember me option
+- Error handling for invalid credentials
+- Redirect to dashboard on success
+
+UI Elements:
+- Restaurant logo
+- Email input field
+- Password input field (with show/hide toggle)
+- Login button
+- "Forgot password?" link
+
+2. DASHBOARD (HOME) - STAFF VIEW
+---------------------------------
+Purpose: View and manage orders
+Features:
+- Header with restaurant name only (centered)
+- Three filter tabs: Pending, Preparing, Served
+- Order list (single column, oldest to newest)
+- Pull to refresh
+- Tap order card to view details
+
+Order Card Shows:
+- Order ID (e.g., "Order #1234")
+- Timestamp (e.g., "12:30 PM")
+- Customer name and table number
+- Items count and total amount
+- Payment status badge (Green=Paid, Red=Unpaid)
+- Order status badge (Yellow=Pending, Orange=Preparing, Green=Served)
+- Right arrow for details
+
+Bottom Navigation:
+- Home (active)
+- Menu
+- Profile
+
+3. DASHBOARD (HOME) - ADMIN VIEW
+---------------------------------
+Purpose: View orders AND monitor staff activity
+Features:
+- All features from Staff View PLUS:
+- "Staff Management" button in header
+- Quick stats card showing:
+  * Total staff count
+  * Currently active (logged in)
+  * Orders today
+  * Low stock items count
+
+4. ORDER DETAILS PAGE
+----------------------
+Purpose: View full order details and update status
+Features:
+- Order ID and timestamp
+- Customer details (name, phone, email, table)
+- Full list of items with quantities and prices
+- Total amount
+- Payment status
+- Current order status
+- Status update buttons:
+  * Mark as Preparing
+  * Mark as Served
+  * Cancel Order (with confirmation)
+- Back button to dashboard
+
+5. MENU MANAGEMENT PAGE
+------------------------
+Purpose: View menu items and control availability
+Features:
+- Search bar at top
+- Filter by category
+- List of all menu items (single column)
+- Pull to refresh
+
+Menu Item Card Shows:
+- Food image (circular, 60px)
+- Item name
+- Daily limit (e.g., "Daily Limit: 50")
+- Current stock (e.g., "Stock: 23 remaining")
+  * Orange text if stock < 10
+  * Red text if stock = 0
+- Toggle switch (Green=Available, Gray=Disabled)
+- Low stock warning icon if stock < 10
+
+Actions:
+- Tap toggle to enable/disable item
+- Tap card to view item details (future feature)
+
+Bottom Navigation:
+- Home
+- Menu (active)
+- Profile
+
+6. STAFF MANAGEMENT PAGE (ADMIN ONLY)
+--------------------------------------
+Purpose: View all staff and monitor who's logged in
+Features:
+- List of all staff members
+- Search staff by name
+- Filter by role (All/Admin/Staff)
+
+Staff Card Shows:
+- Avatar (circular)
+- Name
+- Email
+- Role badge (Admin/Staff)
+- Status indicator:
+  * Green dot = Currently logged in
+  * Gray dot = Offline
+- Last login time
+- Tap to view details (future: edit permissions)
+
+7. PROFILE PAGE
+---------------
+Purpose: View and edit user profile
+Features:
+- User avatar
+- Name
+- Email
+- Role badge
+- "Edit Profile" button (future feature)
+- "Change Password" button (future feature)
+- "Logout" button (red, at bottom)
+
+Bottom Navigation:
+- Home
+- Menu
+- Profile (active)
+
+8. SIDEBAR/DRAWER NAVIGATION
+-----------------------------
+Purpose: Alternative navigation (if using drawer)
+Features:
+- Restaurant name at top
+- User profile section:
+  * Name
+  * Role
+  * "View Profile" link
+- Navigation menu:
+  * Dashboard (home icon)
+  * Menu Management (clipboard icon)
+  * Profile (user icon)
+  * Staff Management (users icon) - Admin only
+- Logout button at bottom
+
+INVENTORY SYSTEM LOGIC
+======================
+
+Daily Stock Flow:
+1. Each menu item has a daily limit (e.g., 50 units)
+2. At midnight, stock resets to daily limit
+3. When order is placed, stock decreases by ordered quantity
+4. If stock reaches 0, item is auto-disabled
+5. Staff can manually disable items anytime
+6. Stock is tracked in daily_inventory table
+
+Example:
+- Garlic Bread: Daily limit = 50
+- Morning: Current stock = 50 (available)
+- Order 1: 3 units → Stock = 47
+- Order 2: 5 units → Stock = 42
+- ...continues...
+- Order N: 2 units → Stock = 0 (auto-disabled)
+- Staff can re-enable if more stock arrives
+- Next day: Stock resets to 50
+
+AUTHENTICATION FLOW
+===================
+
+Login:
+1. User enters email and password
+2. POST /api/staff/login
+3. Backend validates credentials
+4. Returns JWT token and user data
+5. Store token in AsyncStorage
+6. Redirect to dashboard
+
+Session Tracking:
+- When user logs in, create staff_session record
+- Session marked as active
+- Admin can see all active sessions
+- When user logs out, mark session as inactive
+
+Logout:
+1. User taps logout
+2. POST /api/staff/logout with token
+3. Backend marks session as inactive
+4. Clear token from AsyncStorage
+5. Redirect to login page
+
+IMPLEMENTATION PHASES
+=====================
+
+Phase 1: Project Setup
+- Initialize React Native project
+- Set up navigation structure
+- Configure API client
+- Set up state management
+
+Phase 2: Authentication
+- Build login screen
+- Implement auth flow
+- Add token persistence
+- Create protected routes
+
+Phase 3: Dashboard
+- Build order list view
+- Implement filter tabs
+- Create order cards
+- Add pull-to-refresh
+
+Phase 4: Order Management
+- Build order details page
+- Implement status updates
+- Add confirmation dialogs
+
+Phase 5: Menu Management
+- Build menu list view
+- Implement toggle functionality
+- Add stock indicators
+- Create search/filter
+
+Phase 6: Admin Features
+- Build staff management page
+- Show active sessions
+- Add staff list view
+
+Phase 7: Profile & Settings
+- Build profile page
+- Implement logout
+- Add user preferences
+
+Phase 8: Polish & Testing
+- Add loading states
+- Implement error handling
+- Test on different devices
+- Performance optimization
+
+NEXT STEPS
+==========
+1. Review this plan
+2. Decide on React Native setup (Expo vs bare)
+3. Choose state management library
+4. Set up project structure
+5. Begin Phase 1 implementation
+
+Default Staff Credentials (for testing):
+Admin: admin@themenu.com / password123
+Staff: john@themenu.com / password123
+Staff: sarah@themenu.com / password123
