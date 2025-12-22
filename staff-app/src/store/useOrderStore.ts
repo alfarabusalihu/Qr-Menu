@@ -25,21 +25,16 @@ export const useOrderStore = create<OrderState>((set, get) => ({
         }
     },
 
-    updateOrderStatus: async (orderId, status) => {
+    updateOrderStatus: async (id, status) => {
         try {
-            // Optimistic update
             set(state => ({
-                orders: state.orders.map(o => o.id === orderId ? { ...o, status } : o)
+                orders: state.orders.map(o => o.id === id ? { ...o, status } : o)
             }));
 
-            await api.put(`/staff/orders/${orderId}/status`, { status });
+            await api.put(`/orders/${id}/status`, { status });
         } catch (error: any) {
-            // Revert on failure (could refetch, but simple revert for now)
-            set(state => ({
-                error: "Failed to update status",
-                // Ideally we would revert the optimstic update here by re-fetching
-            }));
             get().fetchOrders();
         }
     },
 }));
+```

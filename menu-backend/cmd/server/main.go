@@ -46,6 +46,11 @@ func main() {
 	mux.HandleFunc("POST /api/products", staffHandler.CreateProduct)
 	mux.HandleFunc("PUT /api/products/{id}", staffHandler.UpdateProduct)
 	mux.HandleFunc("DELETE /api/products/{id}", staffHandler.DeleteProduct)
+	
+	mux.HandleFunc("GET /api/staff/stats", staffHandler.GetStaffStats)
+	mux.HandleFunc("GET /api/settings", staffHandler.GetSettings)
+	mux.HandleFunc("POST /api/settings", staffHandler.UpdateSettings)
+	mux.HandleFunc("POST /api/categories", staffHandler.CreateCategory)
 
 	port := os.Getenv("PORT")
 	if port == "" {

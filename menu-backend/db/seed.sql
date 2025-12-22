@@ -1,5 +1,5 @@
 -- Clear existing data
-TRUNCATE table order_items, orders, menu_items, categories CASCADE;
+TRUNCATE table order_items, orders, menu_items, categories, staff, staff_sessions CASCADE;
 
 -- Insert Categories
 INSERT INTO categories (id, slug, name, display_order) VALUES 
@@ -29,5 +29,6 @@ INSERT INTO menu_items (category_id, name, description, price, image_url, prep_t
 -- Real hash for 'password123': $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi
 INSERT INTO staff (name, email, password_hash, role, job_title) VALUES 
 ('Admin User', 'admin@themenu.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'admin', 'Manager'),
+('New Admin', 'admin@gmail.com', '$2a$10$vh/jd1Hkvi6wiRcDi//Ode.LbSW3GAhzbpVb3qP67eF.G7XhCtAVy', 'admin', 'Owner'),
 ('Staff User', 'staff@themenu.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 'staff', 'Waiter');
 
