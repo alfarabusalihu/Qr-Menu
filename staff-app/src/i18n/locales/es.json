@@ -1,0 +1,58 @@
+{
+    "common": {
+        "welcome": "Bienvenido",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "delete": "Eliminar",
+        "edit": "Editar",
+        "loading": "Cargando...",
+        "error": "Error",
+        "success": "Éxito"
+    },
+    "auth": {
+        "login": "Iniciar Sesión",
+        "signup": "Registrarse",
+        "email": "Correo",
+        "password": "Contraseña",
+        "logout": "Cerrar Sesión"
+    },
+    "nav": {
+        "home": "Inicio",
+        "products": "Productos",
+        "staff": "Personal",
+        "orders": "Pedidos",
+        "settings": "Ajustes",
+        "profile": "Perfil"
+    },
+    "profile": {
+        "title": "Perfil",
+        "personal_details": "Detalles Personales",
+        "name": "Nombre",
+        "phone": "Teléfono",
+        "years_of_service": "Años de Servicio",
+        "language": "Idioma",
+        "store_settings": "Ajustes de Tienda",
+        "business_name": "Nombre del Negocio",
+        "category": "Categoría",
+        "select_language": "Seleccionar Idioma"
+    },
+    "dashboard": {
+        "products_qty": "Cant. Productos",
+        "my_orders": "Mis Pedidos",
+        "completed_orders": "Pedidos Completados",
+        "hours_logged": "Horas Registradas",
+        "all_orders": "Todos los Pedidos",
+        "pending_orders": "Pedidos Pendientes"
+    },
+    "products": {
+        "add_new": "Agregar Producto",
+        "currency": "Moneda"
+    },
+    "orders": {
+        "filter_all": "Todos",
+        "filter_pending": "Pendientes",
+        "filter_served": "Servidos",
+        "filter_paid": "Pagados",
+        "filter_cancelled": "Cancelados"
+    }
+}

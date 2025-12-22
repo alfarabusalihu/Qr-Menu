@@ -4,6 +4,7 @@ import { MenuItem } from '../types';
 
 interface MenuState {
     items: MenuItem[];
+    categories: any[];
     isLoading: boolean;
     error: string | null;
     fetchMenu: () => Promise<void>;
@@ -11,10 +12,12 @@ interface MenuState {
     addProduct: (item: Partial<MenuItem>) => Promise<void>;
     updateProduct: (id: string, item: Partial<MenuItem>) => Promise<void>;
     deleteProduct: (id: string) => Promise<void>;
+    createCategory: (name: string) => Promise<void>;
 }
 
 export const useMenuStore = create<MenuState>((set, get) => ({
     items: [],
+    categories: [],
     isLoading: false,
     error: null,
 
@@ -22,16 +25,14 @@ export const useMenuStore = create<MenuState>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const response = await api.get<any>('/staff/menu');
-            // Backend returns { categories: [{ items: [...] }] }
             const categories = response.data.categories || [];
             const allItems: MenuItem[] = [];
             categories.forEach((cat: any) => {
                 cat.items.forEach((item: any) => {
-                    // Include category info if needed
                     allItems.push({ ...item, categoryId: cat.id });
                 });
             });
-            set({ items: allItems, isLoading: false });
+            set({ items: allItems, categories, isLoading: false });
         } catch (error: any) {
             set({ error: error.message, isLoading: false });
         }
@@ -39,14 +40,12 @@ export const useMenuStore = create<MenuState>((set, get) => ({
 
     toggleItemAvailability: async (itemId) => {
         try {
-            // Optimistic update
             set(state => ({
                 items: state.items.map(i => i.id === itemId ? { ...i, isAvailable: !i.isAvailable } : i)
             }));
 
             await api.put(`/staff/menu/${itemId}/toggle`);
         } catch (error: any) {
-            // Revert
             get().fetchMenu();
         }
     },
@@ -77,9 +76,20 @@ export const useMenuStore = create<MenuState>((set, get) => ({
         set({ isLoading: true });
         try {
             await api.delete(`/products/${id}`);
-            get().fetchMenu(); // Refresh list
+            get().fetchMenu();
         } catch (e: any) {
             set({ error: e.message, isLoading: false });
+        }
+    },
+
+    createCategory: async (name) => {
+        set({ isLoading: true });
+        try {
+            await api.post('/categories', { name });
+            get().fetchMenu();
+        } catch (e: any) {
+            set({ error: e.message, isLoading: false });
+            throw e;
         }
     },
 }));

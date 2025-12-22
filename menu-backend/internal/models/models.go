@@ -58,7 +58,15 @@ type Staff struct {
 	Role         string    `json:"role"`
 	JobTitle     string    `json:"jobTitle"`
 	IsActive     bool      `json:"isActive"`
+	Phone        string    `json:"phone,omitempty"`
+	JoinedAt     time.Time `json:"joinedAt"`
 	CreatedAt    time.Time `json:"createdAt"`
+}
+
+type BusinessSettings struct {
+	ID           string `json:"id"`
+	BusinessName string `json:"businessName"`
+	Currency     string `json:"currency"`
 }
 
 type StaffSession struct {

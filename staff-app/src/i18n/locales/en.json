@@ -1,0 +1,58 @@
+{
+    "common": {
+        "welcome": "Welcome",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete",
+        "edit": "Edit",
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success"
+    },
+    "auth": {
+        "login": "Login",
+        "signup": "Sign Up",
+        "email": "Email",
+        "password": "Password",
+        "logout": "Logout"
+    },
+    "nav": {
+        "home": "Home",
+        "products": "Products",
+        "staff": "Staff",
+        "orders": "Orders",
+        "settings": "Settings",
+        "profile": "Profile"
+    },
+    "profile": {
+        "title": "Profile",
+        "personal_details": "Personal Details",
+        "name": "Name",
+        "phone": "Phone",
+        "years_of_service": "Years of Service",
+        "language": "Language",
+        "store_settings": "Store Settings",
+        "business_name": "Business Name",
+        "category": "Category",
+        "select_language": "Select Language"
+    },
+    "dashboard": {
+        "products_qty": "Products Qty",
+        "my_orders": "My Orders",
+        "completed_orders": "Completed Orders",
+        "hours_logged": "Hours Logged",
+        "all_orders": "All Orders",
+        "pending_orders": "Pending Orders"
+    },
+    "products": {
+        "add_new": "Add New Product",
+        "currency": "Currency"
+    },
+    "orders": {
+        "filter_all": "All",
+        "filter_pending": "Pending",
+        "filter_served": "Served",
+        "filter_paid": "Paid",
+        "filter_cancelled": "Cancelled"
+    }
+}

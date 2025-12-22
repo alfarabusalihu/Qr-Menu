@@ -4,11 +4,33 @@ export interface User {
     email: string;
     role: 'admin' | 'staff';
     jobTitle?: 'chef' | 'waiter' | 'manager';
+    phone?: string;
+    profileImage?: string;
+    joinedAt?: string;
+}
+
+export interface BusinessSettings {
+    id: string;
+    businessName: string;
+    currency: string;
+    socials?: {
+        facebook?: string;
+        instagram?: string;
+        twitter?: string;
+    };
+}
+
+export interface StaffStats {
+    productCount: number;
+    totalOrders: number;
+    staffCount?: number;
+    myOrders?: number;
+    workingHours?: number;
 }
 
 export interface AuthResponse {
     token: string;
-    user: User;
+    staff: User;
 }
 
 export interface OrderItem {
@@ -38,11 +60,11 @@ export interface MenuItem {
     name: string;
     description: string;
     price: number;
-    availableQty: number; // Daily stock
-    isAvailable: boolean; // Manual toggle
+    availableQty: number;
+    isAvailable: boolean;
     image: string;
     prepTime?: string;
-    categoryId?: string; // Optional for now
+    categoryId?: string;
 }
 
 export interface StaffMember {

@@ -1,0 +1,58 @@
+{
+    "common": {
+        "welcome": "Welkom",
+        "save": "Opslaan",
+        "cancel": "Annuleren",
+        "delete": "Verwijderen",
+        "edit": "Bewerken",
+        "loading": "Laden...",
+        "error": "Fout",
+        "success": "Succes"
+    },
+    "auth": {
+        "login": "Inloggen",
+        "signup": "Aanmelden",
+        "email": "E-mail",
+        "password": "Wachtwoord",
+        "logout": "Uitloggen"
+    },
+    "nav": {
+        "home": "Start",
+        "products": "Producten",
+        "staff": "Personeel",
+        "orders": "Bestellingen",
+        "settings": "Instellingen",
+        "profile": "Profiel"
+    },
+    "profile": {
+        "title": "Profiel",
+        "personal_details": "Persoonlijke Details",
+        "name": "Naam",
+        "phone": "Telefoon",
+        "years_of_service": "Jaren in Dienst",
+        "language": "Taal",
+        "store_settings": "Winkel Instellingen",
+        "business_name": "Bedrijfsnaam",
+        "category": "Categorie",
+        "select_language": "Selecteer Taal"
+    },
+    "dashboard": {
+        "products_qty": "Aantal Producten",
+        "my_orders": "Mijn Bestellingen",
+        "completed_orders": "Voltooide Bestellingen",
+        "hours_logged": "Geregistreerde Uren",
+        "all_orders": "Alle Bestellingen",
+        "pending_orders": "Wachtende Bestellingen"
+    },
+    "products": {
+        "add_new": "Nieuw Product",
+        "currency": "Valuta"
+    },
+    "orders": {
+        "filter_all": "Alle",
+        "filter_pending": "Wachtend",
+        "filter_served": "Geserveerd",
+        "filter_paid": "Betaald",
+        "filter_cancelled": "Geannuleerd"
+    }
+}

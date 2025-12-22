@@ -1,3 +1,57 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        /* ------------------- */
+        /* Light Mode (Default) */
+        /* ------------------- */
+
+        /* Base Colors (Light Scheme) */
+        --background: #f8fafc;
+        /* Slate-50 */
+        --foreground: #003153;
+        /* Prussian Dark */
+
+        --surface: #ffffff;
+        --surface-light: #e2e8f0;
+        /* Slate-200 */
+
+        --text-primary: #0f172a;
+        /* Slate-900 */
+        --text-secondary: #64748b;
+        /* Slate-500 */
+
+        --border-color: #e2e8f0;
+
+        /* Accents (Keep consistent or adjust specific for light) */
+        --yellow: #caa40e;
+        /* A bit darker yellow for contrast on white? Or keep #fef08a */
+        /* Let's keep the yellow palette constants but use them appropriately */
+
+        /* Constant Palette definitions if needed for direct usage */
+        --prussian-dark: #003153;
+        --yellow-acc: #caa40e;
+    }
+
+    .dark {
+        /* ------------------- */
+        /* Dark Mode (Prussian) */
+        /* ------------------- */
+
+        --background: #001f33;
+        --foreground: #ffffff;
+
+        --surface: #002849;
+        --surface-light: #003660;
+
+        --text-primary: #ffffff;
+        --text-secondary: #9ca3af;
+        /* Gray-400 */
+
+        --border-color: rgba(255, 255, 255, 0.1);
+
+        --yellow: #fef08a;
+    }
+}
